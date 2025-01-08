@@ -77,3 +77,18 @@ export NODE_OPTIONS=--openssl-legacy-provider
 Ricarica il file:
 
     source ~/.bashrc
+
+## Passaggi per l'installazione
+
+1. **Backend**:
+   - Naviga nella cartella `backend/` e installa le dipendenze necessarie:
+   
+   ```bash
+   npm install bcryptjs jsonwebtoken
+
+    Frontend:
+        Naviga nella cartella client/ e installa axios per le richieste HTTP:
+
+npm install axios
+
+Per abilitare CORS nel server, è stato utilizzato il middleware `cors` in `server.js`, che consente le richieste cross-origin dal client React. Dopo aver avviato il server, puoi registrarti con successo e vedere il token di autenticazione nella risposta. Per verificare la registrazione, apri la console di Firefox con `Ctrl + Shift + I`, dove vedrai un messaggio di successo con il token salvato nel `localStorage`.
