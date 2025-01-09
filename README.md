@@ -5,6 +5,29 @@
 - Node.js (versione 18 o superiore)
 - npm (Node Package Manager)
 
+# Installazione Node.js e nvm (macOS e Linux)
+
+## Installazione Node.js
+1. Scarica da [https://nodejs.org](https://nodejs.org) e installa (LTS consigliato).
+2. Verifica l'installazione:
+   ```bash
+   node -v
+   npm -v
+Installazione nvm
+
+Installa nvm:
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+Aggiungi nvm al profilo della shell:
+bash: ~/.bash_profile
+zsh: ~/.zshrc
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+Ricarica:
+source ~/.bash_profile  # o ~/.zshrc
+Verifica:
+nvm --version
+
+
 ---
 
 ## Setup del Server (Backend)
