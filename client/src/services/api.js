@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Impostazioni di base per le chiamate API
 const api = axios.create({
-    baseURL: 'http://localhost:3001/api',
+    baseURL: 'http://localhost:3001/api',  // Punti al server locale
     headers: {
         'Content-Type': 'application/json',
     },
