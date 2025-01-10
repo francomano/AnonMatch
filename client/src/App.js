@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Register from './components/Register';
 import Login from './components/Login';
 import Chat from './components/Chat';
+import './App.css';
 
 const App = () => {
     const [token, setToken] = useState(localStorage.getItem('token'));
