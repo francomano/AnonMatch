@@ -157,6 +157,10 @@ CREATE TABLE users (
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     password VARCHAR(255),
+    situation VARCHAR(50),  -- Nuovo campo per la situazione
+    orientation VARCHAR(50), -- Nuovo campo per l'orientamento
+    birthday DATE,           -- Nuovo campo per la data di nascita
+    gender VARCHAR(50),      -- Nuovo campo per il genere
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -171,8 +175,10 @@ CREATE TABLE messages (
 );
 Verifica la creazione delle tabelle:
 \dt
-\d users
-\d messages
+Verifica che ci sono gli utenti:
+\x
+SELECT * FROM users;
+
 3. Passaggio a AWS RDS
 
 3.1 Creazione Database su AWS RDS

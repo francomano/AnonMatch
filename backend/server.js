@@ -69,7 +69,7 @@ const getRandomSender = async (email) => {
 
 // API per la registrazione dell'utente
 app.post('/api/register', async (req, res) => {
-    const { email, password, name } = req.body;
+    const { email, password, name, orientation, situation, birthday, gender } = req.body;
 
     try {
         // Verifica se l'utente esiste già
@@ -83,7 +83,10 @@ app.post('/api/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         // Inserire l'utente nel database
-        await pool.query('INSERT INTO users (email, password, name) VALUES ($1, $2, $3)', [email, hashedPassword, name]);
+        await pool.query(
+            'INSERT INTO users (email, password, name, orientation, situation, birthday, gender) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [email, hashedPassword, name, orientation, situation, birthday, gender]
+        );
 
         // Creare il token JWT
         const token = jwt.sign({ email }, 'secretkey', { expiresIn: '1h' });
