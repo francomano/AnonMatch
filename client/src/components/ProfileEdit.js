@@ -11,11 +11,10 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
         movie_genre: '',
         sport: '',
         description: '',
-        profile_picture: null, // Modifica per gestire il file
+        profile_picture: null, // Gestione del file
     });
 
     useEffect(() => {
-        // Carica il profilo se esiste
         const fetchProfile = async () => {
             const token = localStorage.getItem('token');
             try {
@@ -53,32 +52,36 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
         const token = localStorage.getItem('token');
         
         const formData = new FormData();
-        for (const key in profileData) {
-            formData.append(key, profileData[key]);
+        if (profileData.profile_picture) {
+            formData.append('profile_picture', profileData.profile_picture);
         }
-        
+
         try {
-            const response = await axios.put('http://localhost:3001/api/profile', formData, {
+            let profilePictureUrl = null;
+            if (formData.has('profile_picture')) {
+                const fileResponse = await axios.put('http://localhost:3003/api/profile', formData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                profilePictureUrl = fileResponse.data.profile_picture; // Ottieni l'URL dell'immagine
+            }
+
+            const updatedData = {
+                ...profileData,
+                profile_picture: profilePictureUrl, // URL ottenuto dal server di immagini
+            };
+
+            await axios.put('http://localhost:3001/api/profile', updatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log('Profilo aggiornato:', response.data);
-            setCurrentPage('profile');
+
+            console.log('Profilo aggiornato:', updatedData);
         } catch (error) {
-            if (error.response) {
-                // Se il server ha risposto con un errore
-                console.error('Errore dalla risposta del server:', error.response);
-                console.error('Status code:', error.response.status);
-                console.error('Data:', error.response.data);
-            } else if (error.request) {
-                // Se la richiesta è stata fatta ma non c'è stata risposta
-                console.error('Nessuna risposta dal server:', error.request);
-            } else {
-                // Qualcosa è andato storto durante la configurazione della richiesta
-                console.error('Errore nella configurazione della richiesta:', error.message);
-            }
+            console.error('Errore nell\'aggiornamento del profilo:', error);
         }
     };
 

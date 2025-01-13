@@ -208,9 +208,10 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 // Route per caricare e aggiornare il profilo
 app.put('/api/profile', authenticateToken, async (req, res) => {
     const email = req.user.email;
-    const { name, orientation, goal, music_genre, movie_genre, sport, description} = req.body;
-    profilePicture = req.body.profile_picture;
-    console.log("oggetto: ", profilePicture);
+    const { name, orientation, goal, music_genre, movie_genre, sport, description, profile_picture } = req.body;
+
+    console.log("Dati ricevuti:", req.body);
+
     try {
         // Aggiorna il profilo dell'utente nel database
         await pool.query(`
@@ -227,7 +228,7 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
             WHERE email = $9
         `, [
             name, 
-            profilePicture, 
+            profile_picture, 
             orientation, 
             goal, 
             music_genre, 
@@ -240,7 +241,8 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
         res.status(200).json({
             message: 'Profilo aggiornato con successo',
             name,
-            email
+            email,
+            profile_picture: profile_picture
         });
     } catch (error) {
         console.error('Errore nell\'aggiornamento del profilo:', error);

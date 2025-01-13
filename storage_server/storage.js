@@ -3,6 +3,9 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const app = express();
+const cors = require('cors');
+
+app.use(cors());
 
 // Configura multer per memorizzare i file nella cartella 'uploads/'
 const storage = multer.diskStorage({
@@ -34,7 +37,7 @@ app.put('/api/profile', upload.single('profile_picture'), async (req, res) => {
     // Qui puoi aggiungere la logica per aggiornare il database con il nome del file
     // Ad esempio: updateUserProfile(fileName, req.user.email);
     
-    const profilePictureUrl = `http://localhost:3000/uploads/${fileName}`;
+    const profilePictureUrl = `http://localhost:3003/uploads/${fileName}`;
 
     return res.status(200).json({
         message: 'Immagine caricata con successo',
@@ -46,7 +49,7 @@ app.put('/api/profile', upload.single('profile_picture'), async (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Avvia il server
-const PORT = 3000;
+const PORT = 3003;
 app.listen(PORT, () => {
     console.log(`Server in ascolto sulla porta ${PORT}`);
 });
