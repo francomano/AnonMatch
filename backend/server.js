@@ -69,7 +69,7 @@ const getRandomSender = async (email) => {
 
 // API per la registrazione dell'utente
 app.post('/api/register', async (req, res) => {
-    const { email, password, name, orientation, situation, birthday, gender } = req.body;
+    const { email, password, name, orientation, status, birthday, gender } = req.body;
 
     try {
         // Verifica se l'utente esiste già
@@ -84,8 +84,8 @@ app.post('/api/register', async (req, res) => {
 
         // Inserire l'utente nel database
         await pool.query(
-            'INSERT INTO users (email, password, name, orientation, situation, birthday, gender) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-            [email, hashedPassword, name, orientation, situation, birthday, gender]
+            'INSERT INTO users (email, password, name, orientation, user_status, birthday, gender) VALUES ($1, $2, $3, $4, $5, $6, $7)',
+            [email, hashedPassword, name, orientation, status, birthday, gender]
         );
 
         // Creare il token JWT
@@ -208,7 +208,7 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 // Route per caricare e aggiornare il profilo
 app.put('/api/profile', authenticateToken, async (req, res) => {
     const email = req.user.email;
-    const { name, orientation, goal, music_genre, movie_genre, sport, description, profile_picture } = req.body;
+    const { name, orientation, goal, music_genre, movie_genre, sport, description, profile_picture, status, nationality, city } = req.body;
 
     console.log("Dati ricevuti:", req.body);
 
@@ -219,16 +219,22 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
             SET 
                 name = $1, 
                 profile_picture = $2,
-                orientation = $3,
-                situation = $4,
-                music_genre = $5,
-                movie_genre = $6,
-                favorite_sport = $7,
-                description = $8
-            WHERE email = $9
+                user_status = $3,
+                nationality = $4,
+                city = $5,
+                orientation = $6,
+                situation = $7,
+                music_genre = $8,
+                movie_genre = $9,
+                favorite_sport = $10,
+                description = $11
+            WHERE email = $12
         `, [
             name, 
             profile_picture, 
+            status, 
+            nationality, 
+            city, 
             orientation, 
             goal, 
             music_genre, 
@@ -237,7 +243,7 @@ app.put('/api/profile', authenticateToken, async (req, res) => {
             description, 
             email
         ]);
-
+        
         res.status(200).json({
             message: 'Profilo aggiornato con successo',
             name,

@@ -6,9 +6,11 @@ const Register = () => {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
     const [orientation, setOrientation] = useState('');
-    const [situation, setSituation] = useState('');
+    const [status, setStatus] = useState('');
     const [birthday, setBirthday] = useState('');
     const [gender, setGender] = useState('');
+    const [nationality, setNationality] = useState('');
+    const [city, setCity] = useState('');
     const [error, setError] = useState('');
 
     const handleRegister = async (e) => {
@@ -20,9 +22,11 @@ const Register = () => {
                 password,
                 name,
                 orientation,
-                situation,
+                status,
                 birthday,
-                gender
+                gender,
+                nationality,
+                city
             });
             const token = response.data.token;
             localStorage.setItem('token', token); // Salva il token nel localStorage
@@ -55,11 +59,11 @@ const Register = () => {
             
             {/* Select per Situazione */}
             <select
-                value={situation}
-                onChange={(e) => setSituation(e.target.value)}
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
                 required
             >
-                <option value="">Seleziona la tua situazione</option>
+                <option value="">Seleziona il tuo status</option>
                 <option value="single">Single</option>
                 <option value="fidanzato">Fidanzato</option>
             </select>
@@ -100,6 +104,43 @@ const Register = () => {
                 <option value="F">Femmina</option>
                 <option value="non-binary">Non binario</option>
                 <option value="altro">Altro</option>
+            </select>
+
+            {/* Select per Nazionalità */}
+            <select
+                value={nationality}
+                onChange={(e) => setNationality(e.target.value)}
+                required
+            >
+                <option value="">Seleziona la tua nazionalità</option>
+                <option value="italian">Italiana</option>
+                <option value="american">Americana</option>
+                <option value="british">Britannica</option>
+                <option value="french">Francese</option>
+                <option value="german">Tedesca</option>
+                <option value="spanish">Spagnola</option>
+                <option value="other">Altro</option>
+            </select>
+
+            {/* Select per Città */}
+            <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                required
+            >
+                <option value="">Seleziona la tua città</option>
+                <option value="rome">Roma</option>
+                <option value="milan">Milano</option>
+                <option value="naples">Napoli</option>
+                <option value="turin">Torino</option>
+                <option value="palermo">Palermo</option>
+                <option value="genoa">Genova</option>
+                <option value="bologna">Bologna</option>
+                <option value="florence">Firenze</option>
+                <option value="venice">Venezia</option>
+                <option value="verona">Verona</option>
+                <option value="catania">Catania</option>
+                <option value="bari">Bari</option>
             </select>
 
             <button type="submit">Registrati</button>

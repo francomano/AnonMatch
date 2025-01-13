@@ -12,6 +12,9 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
         sport: '',
         description: '',
         profile_picture: null, // Gestione del file
+        status: '',
+        nationality: '',
+        city: '',
     });
 
     useEffect(() => {
@@ -195,6 +198,38 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         onChange={handleFileChange}
                     />
                 </div>
+                <div>
+                <label>Status</label>
+                <select name="status" value={profileData.status} onChange={handleChange}>
+                    <option value="">Seleziona</option>
+                    <option value="single">Single</option>
+                    <option value="fidanzato">Fidanzato</option>
+                </select>
+            </div>
+
+            <div>
+                <label>Nazionalità</label>
+                <select name="nationality" value={profileData.nationality} onChange={handleChange}>
+                    <option value="">Seleziona</option>
+                    <option value="italian">Italiana</option>
+                    <option value="american">Americana</option>
+                    <option value="french">Francese</option>
+                    {/* Aggiungi altre opzioni */}
+                </select>
+            </div>
+
+            <div>
+                <label>Città</label>
+                <select name="city" value={profileData.city} onChange={handleChange}>
+                    <option value="">Seleziona</option>
+                    <option value="rome">Roma</option>
+                    <option value="milan">Milano</option>
+                    <option value="naples">Napoli</option>
+                    <option value="florence">Firenze</option>
+                    <option value="venice">Venezia</option>
+                    {/* Aggiungi altre città */}
+                </select>
+            </div>
                 <div>
                     <button
                         type="button"
