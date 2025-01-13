@@ -46,18 +46,39 @@ const authenticateToken = (req, res, next) => {
 // Funzione per selezionare un mittente casuale dal database (diverso dall'utente loggato)
 const getRandomSender = async (email) => {
     try {
-        // Seleziona un utente casuale che non sia l'utente loggato
-        const result = await pool.query(
-            'SELECT email FROM users WHERE email != $1 ORDER BY RANDOM() LIMIT 1',
-            [email]
-        );
-        
-        // Aggiungi il log per stampare il destinatario trovato
-        if (result.rows.length > 0) {
-            console.log('Destinatario trovato:', result.rows[0].email);  // Stampa l'email del destinatario trovato
-            return result.rows[0].email;  // Restituisce l'email del mittente casuale
+        // Recupera lo status e la città dell'utente loggato
+        const userQuery = `
+            SELECT user_status, city
+            FROM users
+            WHERE email = $1;
+        `;
+        const userResult = await pool.query(userQuery, [email]);
+
+        if (userResult.rows.length === 0) {
+            console.log('Utente loggato non trovato.');
+            return null;
+        }
+
+        const { status, city } = userResult.rows[0];
+        console.log('Status e città dell\'utente loggato:', status, city);
+
+        // Cerca un utente casuale con lo stesso status e città
+        const matchQuery = `
+            SELECT email 
+            FROM users 
+            WHERE email != $1 
+              AND (user_status = $2 OR $2 IS NULL) -- Lo stesso status
+              AND (city = $3 OR $3 IS NULL)   -- La stessa città
+            ORDER BY RANDOM() 
+            LIMIT 1;
+        `;
+        const matchResult = await pool.query(matchQuery, [email, status, city]);
+
+        if (matchResult.rows.length > 0) {
+            console.log('Destinatario trovato:', matchResult.rows[0].email);
+            return matchResult.rows[0].email;
         } else {
-            console.log('Nessun destinatario trovato');  // Se non ci sono altri utenti
+            console.log('Nessun destinatario trovato con gli stessi criteri.');
             return null;
         }
     } catch (error) {
@@ -65,6 +86,7 @@ const getRandomSender = async (email) => {
         throw error;
     }
 };
+
 
 
 // API per la registrazione dell'utente
