@@ -156,12 +156,21 @@ CREATE TABLE users (
     name VARCHAR(100),
     email VARCHAR(100) UNIQUE,
     password VARCHAR(255),
-    situation VARCHAR(50),  -- Nuovo campo per la situazione
-    orientation VARCHAR(50), -- Nuovo campo per l'orientamento
-    birthday DATE,           -- Nuovo campo per la data di nascita
-    gender VARCHAR(50),      -- Nuovo campo per il genere
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    situation VARCHAR(50),
+    orientation VARCHAR(50),
+    birthday DATE,
+    gender VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_status VARCHAR(255),
+    nationality VARCHAR(100),
+    city VARCHAR(100),
+    music_genre VARCHAR(100),
+    movie_genre VARCHAR(100),
+    favorite_sport VARCHAR(100),
+    description TEXT,
+    profile_picture VARCHAR(255)
 );
+
 
 CREATE TABLE messages (
     id SERIAL PRIMARY KEY,
