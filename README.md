@@ -53,7 +53,6 @@ npm init -y
 npm install react react-dom
 npm install react-scripts
 npm install @testing-library/react @testing-library/jest-dom @testing-library/user-event web-vitals
-
 Modifica permanente per OpenSSL3 (se necessario):
 
 Per risolvere il problema con Webpack e OpenSSL3, modifica il package.json aggiungendo la variabile di ambiente nella sezione degli script:

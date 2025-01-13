@@ -174,8 +174,82 @@ app.get('/api/chat', authenticateToken, async (req, res) => {
         return res.status(500).json({ message: 'Errore interno del server' });
     }
 });
+// ----------------GESTIONE DEL PROFILO DELL'UTENTE-------------------
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+const { profile } = require('console');
 
-// Avvio del server
-app.listen(port, () => {
-    console.log(`Server in ascolto sulla porta ${port}`);
+// Route per ottenere il profilo (name ed email)
+app.get('/api/profile', authenticateToken, async (req, res) => {
+    const email = req.user.email; // Ottieni l'email dall'utente autenticato
+
+    try {
+        // Recupera il profilo dell'utente dal database
+        const result = await pool.query(`
+            SELECT name, email, profile_picture
+            FROM users
+            WHERE email = $1
+        `, [email]);
+
+        if (result.rows.length > 0) {
+            const { name, email, profile_picture } = result.rows[0];
+            res.status(200).json({ name, email, profile_picture });
+        } else {
+            res.status(404).json({ message: 'Profilo non trovato' });
+        }
+    } catch (error) {
+        console.error('Errore nel recupero del profilo:', error);
+        res.status(500).json({ message: 'Errore interno del server' });
+    }
+});
+
+
+// Route per caricare e aggiornare il profilo
+app.put('/api/profile', authenticateToken, async (req, res) => {
+    const email = req.user.email;
+    const { name, orientation, goal, music_genre, movie_genre, sport, description} = req.body;
+    profilePicture = req.body.profile_picture;
+    console.log("oggetto: ", profilePicture);
+    try {
+        // Aggiorna il profilo dell'utente nel database
+        await pool.query(`
+            UPDATE users
+            SET 
+                name = $1, 
+                profile_picture = $2,
+                orientation = $3,
+                situation = $4,
+                music_genre = $5,
+                movie_genre = $6,
+                favorite_sport = $7,
+                description = $8
+            WHERE email = $9
+        `, [
+            name, 
+            profilePicture, 
+            orientation, 
+            goal, 
+            music_genre, 
+            movie_genre, 
+            sport, 
+            description, 
+            email
+        ]);
+
+        res.status(200).json({
+            message: 'Profilo aggiornato con successo',
+            name,
+            email
+        });
+    } catch (error) {
+        console.error('Errore nell\'aggiornamento del profilo:', error);
+        res.status(500).json({ message: 'Errore interno del server' });
+    }
+});
+
+// Avvia il server
+const PORT = 3001;
+app.listen(PORT, () => {
+    console.log(`Server in ascolto sulla porta ${PORT}`);
 });
