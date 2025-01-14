@@ -1,2 +1,2 @@
 # Ignora la cartella uploads dentro storage_server
-/storage_server/uploads/
+/storage_server/uploads/*
