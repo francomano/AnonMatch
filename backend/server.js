@@ -59,8 +59,8 @@ const getRandomSender = async (email) => {
             return null;
         }
 
-        const { status, city } = userResult.rows[0];
-        console.log('Status e città dell\'utente loggato:', status, city);
+        const { user_status, city } = userResult.rows[0];
+        console.log('Status e città dell\'utente loggato:', user_status, city);
 
         // Cerca un utente casuale con lo stesso status e città
         const matchQuery = `
@@ -72,7 +72,8 @@ const getRandomSender = async (email) => {
             ORDER BY RANDOM() 
             LIMIT 1;
         `;
-        const matchResult = await pool.query(matchQuery, [email, status, city]);
+        const matchResult = await pool.query(matchQuery, [email, user_status, city]);
+	console.log("match: ",matchResult);
 
         if (matchResult.rows.length > 0) {
             console.log('Destinatario trovato:', matchResult.rows[0].email);
@@ -91,7 +92,7 @@ const getRandomSender = async (email) => {
 
 // API per la registrazione dell'utente
 app.post('/api/register', async (req, res) => {
-    const { email, password, name, orientation, status, birthday, gender } = req.body;
+    const { email, password, name, orientation, status, birthday, gender, city} = req.body;
 
     try {
         // Verifica se l'utente esiste già
@@ -106,8 +107,8 @@ app.post('/api/register', async (req, res) => {
 
         // Inserire l'utente nel database
         await pool.query(
-            'INSERT INTO users (email, password, name, orientation, user_status, birthday, gender) VALUES ($1, $2, $3, $4, $5, $6, $7)',
-            [email, hashedPassword, name, orientation, status, birthday, gender]
+            'INSERT INTO users (email, password, name, orientation, user_status, birthday, gender, city) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+            [email, hashedPassword, name, orientation, status, birthday, gender, city]
         );
 
         // Creare il token JWT

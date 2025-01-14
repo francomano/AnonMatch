@@ -146,6 +146,10 @@ psql --version
 
 Accedi alla shell di PostgreSQL:
 psql -U postgres
+Se dovesse dare l'errore FATAL: Peer authentication failed for user 'postgres', bisogna autenticarsi come postgres
+sudo -i -u postgres
+psql
+ALTER USER postgres PASSWORD 'm1ll10n3r3';
 Crea il database:
 CREATE DATABASE anonmatch;
 Connettiti al database appena creato:
