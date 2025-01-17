@@ -184,12 +184,16 @@ app.post('/api/chat', authenticateToken, async (req, res) => {
 // API per ottenere i messaggi dell'utente loggato
 app.get('/api/chat', authenticateToken, async (req, res) => {
     const senderEmail = req.user.email;  // L'email dell'utente loggato
+    const { receiverEmail } = req.query;  // Email della persona specifica
+
+    if (!receiverEmail) {
+        return res.status(400).json({ message: 'Email del destinatario mancante.' });
+    }
 
     try {
-        // Recuperare i messaggi inviati e ricevuti dall'utente loggato
         const result = await pool.query(
-            'SELECT * FROM messages WHERE sender_email = $1 OR receiver_email = $1',
-            [senderEmail]
+            'SELECT * FROM messages WHERE (sender_email = $1 AND receiver_email = $2) OR (sender_email = $2 AND receiver_email = $1)',
+            [senderEmail, receiverEmail]
         );
         return res.status(200).json({ messages: result.rows });
     } catch (error) {
@@ -197,6 +201,7 @@ app.get('/api/chat', authenticateToken, async (req, res) => {
         return res.status(500).json({ message: 'Errore interno del server' });
     }
 });
+
 // ----------------GESTIONE DEL PROFILO DELL'UTENTE-------------------
 const multer = require('multer');
 const fs = require('fs');

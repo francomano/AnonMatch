@@ -11,18 +11,29 @@ const Chat = () => {
     
     // Funzione per caricare i messaggi dal backend
     const loadMessages = async () => {
+        const receiverEmail = localStorage.getItem('senderEmail'); // Recupera l'email del destinatario dal localStorage
+        if (!receiverEmail) {
+            console.error('Nessuna email del destinatario trovata nel localStorage.');
+            setError('Destinatario non specificato.');
+            return;
+        }
+    
         try {
             const response = await axios.get('http://localhost:3001/api/chat', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                }
+                },
+                params: {
+                    receiverEmail: receiverEmail, // Passa l'email del destinatario come parametro
+                },
             });
+    
             setMessages(response.data.messages); // Popola lo stato dei messaggi
         } catch (error) {
             console.error('Errore nel recupero dei messaggi:', error);
             setError('Errore nel recupero dei messaggi');
         }
-    };
+    };    
 
     // Carica i messaggi quando il componente viene montato
     useEffect(() => {
