@@ -1,0 +1,10 @@
+{
+    "expo": {
+      "name": "MyApp", 
+      "slug": "myapp",   
+      "platforms": ["ios", "android", "web"], 
+      "main": "src/App.js",
+      "version": "1.0.0"
+    }
+  }
+  

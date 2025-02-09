@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const Login = ({ onLogin }) => {
@@ -6,51 +8,76 @@ const Login = ({ onLogin }) => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-
+    const handleLogin = async () => {
         try {
             // Effettua la chiamata per autenticarsi
-            const response = await axios.post('http://localhost:3001/api/login', { email, password });
+            const response = await axios.post('http://192.168.0.24:3001/api/login', { email, password });
 
-            // Salva il token di autenticazione nel localStorage
-            localStorage.setItem('token', response.data.token);
+            // Salva il token e altre informazioni in AsyncStorage
+            await AsyncStorage.setItem('token', response.data.token);
+            await AsyncStorage.setItem('email', email);
+            await AsyncStorage.setItem('senderEmail', response.data.senderEmail);
 
-            // Salva l'email dell'utente loggato nel localStorage
-            localStorage.setItem('email', email);
-
-            // Salva l'email del mittente casuale nel localStorage
-            localStorage.setItem('senderEmail', response.data.senderEmail); // 'senderEmail' dal backend
-
-            // Chiamata al callback per fare il login
+            // Chiamata al callback per aggiornare lo stato dell'app
             onLogin(response.data.token);
 
         } catch (error) {
             setError('Credenziali non valide');
             console.error("Errore nella login:", error);
+            Alert.alert("Errore", "Credenziali non valide"); // Messaggio di errore per l'utente
         }
     };
 
     return (
-        <form onSubmit={handleLogin}>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+        <View style={styles.container}>
+            <Text style={styles.title}>Login</Text>
+
+            <TextInput
+                style={styles.input}
                 placeholder="Email"
-                required
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
             />
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+            <TextInput
+                style={styles.input}
                 placeholder="Password"
-                required
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
             />
-            <button type="submit">Login</button>
-            {error && <p>{error}</p>}
-        </form>
+
+            <Button title="Login" onPress={handleLogin} />
+
+            {error && <Text style={styles.errorText}>{error}</Text>}
+        </View>
     );
 };
+
+// 🎨 Stili per React Native
+const styles = StyleSheet.create({
+    container: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    input: {
+        width: '100%',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 10,
+    },
+});
 
 export default Login;

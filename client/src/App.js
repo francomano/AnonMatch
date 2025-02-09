@@ -1,174 +1,129 @@
 import React, { useState, useEffect } from 'react';
+import { View, Text, Button, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Register from './components/Register';
 import Login from './components/Login';
 import Chat from './components/Chat';
-import Profile from './components/Profile';  // Componente per visualizzare il profilo
-import ProfileEdit from './components/ProfileEdit';  // Componente per modificare il profilo
-import './App.css';
+import Profile from './components/Profile';
+import ProfileEdit from './components/ProfileEdit';
 import axios from 'axios';
 
 const App = () => {
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [authStep, setAuthStep] = useState('choose');  // 'choose', 'login', 'register'
-    const [currentPage, setCurrentPage] = useState('chat');  // Gestisce la pagina attuale
-    const [profile, setProfile] = useState(null);  // Stato per il profilo
+    const [token, setToken] = useState(null);
+    const [authStep, setAuthStep] = useState('choose'); // 'choose', 'login', 'register'
+    const [currentPage, setCurrentPage] = useState('chat');
+    const [profile, setProfile] = useState(null);
 
-    // Funzione per gestire il login
-    const handleLogin = (token) => {
-        localStorage.setItem('token', token);
+    // Carica il token salvato
+    useEffect(() => {
+        const loadToken = async () => {
+            const savedToken = await AsyncStorage.getItem('token');
+            if (savedToken) {
+                setToken(savedToken);
+            }
+        };
+        loadToken();
+    }, []);
+
+    // Salva il token quando l'utente fa il login
+    const handleLogin = async (token) => {
+        await AsyncStorage.setItem('token', token);
         setToken(token);
         setAuthStep('choose');
     };
 
-    // Funzione per gestire il logout
-    const handleLogout = () => {
-        localStorage.removeItem('token');
+    // Logout
+    const handleLogout = async () => {
+        await AsyncStorage.removeItem('token');
         setToken(null);
         setAuthStep('choose');
         setCurrentPage('chat');
     };
 
-    // Funzione per passare alla schermata di login
-    const handleLoginStep = () => {
-        setAuthStep('login');
-    };
-
-    // Funzione per passare alla schermata di registrazione
-    const handleRegisterStep = () => {
-        setAuthStep('register');
-    };
-
-    // Funzione per passare alla schermata di modifica del profilo
-    const handleProfileEdit = () => {
-        setCurrentPage('profile-edit');
-    };
-
-    // Funzione per caricare il profilo
-    const fetchProfile = async () => {
-        if (token) {
-            try {
-                const response = await axios.get('http://localhost:3001/api/profile', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setProfile(response.data);
-            } catch (error) {
-                console.error('Errore nel recupero del profilo', error);
-            }
-        }
-    };
-
-    // Carica il profilo quando l'utente è loggato
+    // Carica il profilo se siamo nella schermata profilo
     useEffect(() => {
-        if (token && currentPage === 'profile') {
-            fetchProfile();
-        }
+        const fetchProfile = async () => {
+            if (token && currentPage === 'profile') {
+                try {
+                    const response = await axios.get('http://localhost:3001/api/profile', {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setProfile(response.data);
+                } catch (error) {
+                    console.error('Errore nel recupero del profilo', error);
+                }
+            }
+        };
+        fetchProfile();
     }, [token, currentPage]);
 
-    // Funzione per tornare alla chat
-    const handleBackToChat = () => {
-        setCurrentPage('chat');
-    };
-
-    // Funzione per tornare al profilo
-    const handleBackToProfile = () => {
-        setCurrentPage('profile');
-    };
-
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>AnonMatch</h1>
+        <View style={styles.container}>
+            <Text style={styles.title}>AnonMatch</Text>
 
-            {/* Se l'utente è loggato */}
             {token ? (
-                <div>
-                    {/* Se siamo nella pagina della chat */}
+                <View>
                     {currentPage === 'chat' && (
-                        <div>
+                        <View>
                             <Chat />
-                            <button 
-                                onClick={handleLogout} 
-                                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#FF6347', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Logout
-                            </button>
-                            <button
-                                onClick={() => setCurrentPage('profile')}
-                                style={{ marginTop: '10px', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Visualizza Profilo
-                            </button>
-                        </div>
+                            <Button title="Logout" color="#FF6347" onPress={handleLogout} />
+                            <Button title="Visualizza Profilo" color="#4CAF50" onPress={() => setCurrentPage('profile')} />
+                        </View>
                     )}
 
-                    {/* Se siamo nella pagina del profilo */}
-                    {currentPage === 'profile' && (
-                        <div>
-                            <Profile profile={profile} onEdit={handleProfileEdit} onBackToChat={handleBackToChat} />
-                        </div>
-                    )}
+                    {currentPage === 'profile' && <Profile profile={profile} onEdit={() => setCurrentPage('profile-edit')} onBackToChat={() => setCurrentPage('chat')} />}
 
-                    {/* Se siamo nella pagina di modifica del profilo */}
-                    {currentPage === 'profile-edit' && (
-                        <div>
-                            <ProfileEdit onSave={handleBackToProfile} onBackToProfile={handleBackToProfile} />
-                            
-                        </div>
-                    )}
-                </div>
+                    {currentPage === 'profile-edit' && <ProfileEdit onSave={() => setCurrentPage('profile')} onBackToProfile={() => setCurrentPage('profile')} />}
+                </View>
             ) : (
-                <div>
-                    {/* Se l'utente deve scegliere tra login o registrazione */}
+                <View>
                     {authStep === 'choose' && (
-                        <div>
-                            <p>Benvenuto! Scegli cosa fare:</p>
-                            <button 
-                                onClick={handleRegisterStep} 
-                                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Registrati
-                            </button>
-                            <button 
-                                onClick={handleLoginStep} 
-                                style={{ marginTop: '10px', padding: '10px 20px', backgroundColor: '#2196F3', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Login
-                            </button>
-                        </div>
+                        <View>
+                            <Text>Benvenuto! Scegli cosa fare:</Text>
+                            <Button title="Registrati" color="#4CAF50" onPress={() => setAuthStep('register')} />
+                            <Button title="Login" color="#2196F3" onPress={() => setAuthStep('login')} />
+                        </View>
                     )}
 
-                    {/* Se si è scelto di registrarsi */}
                     {authStep === 'register' && (
-                        <div>
-                            <h2>Registrazione</h2>
+                        <View>
+                            <Text style={styles.subtitle}>Registrazione</Text>
                             <Register onRegistered={() => setAuthStep('login')} />
-                            <button 
-                                onClick={handleLoginStep} 
-                                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#FF6347', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Hai già un account? Accedi
-                            </button>
-                        </div>
+                            <Button title="Hai già un account? Accedi" color="#FF6347" onPress={() => setAuthStep('login')} />
+                        </View>
                     )}
 
-                    {/* Se si è scelto di fare login */}
                     {authStep === 'login' && (
-                        <div>
-                            <h2>Login</h2>
+                        <View>
+                            <Text style={styles.subtitle}>Login</Text>
                             <Login onLogin={handleLogin} />
-                            <button 
-                                onClick={handleRegisterStep} 
-                                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px' }}
-                            >
-                                Non hai un account? Registrati
-                            </button>
-                        </div>
+                            <Button title="Non hai un account? Registrati" color="#4CAF50" onPress={() => setAuthStep('register')} />
+                        </View>
                     )}
-                </div>
+                </View>
             )}
-        </div>
+        </View>
     );
 };
+
+// 🎨 Stili per React Native (sostituisce CSS)
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    subtitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+});
 
 export default App;

@@ -62,33 +62,21 @@
 
 ---
 
-## Setup del Client (Frontend React)
+## Setup del Client (Frontend React Native)
 
-1. **Inizializzare il progetto**:
+# Dopo aver clonato il progetto, entra in client ed esegui i seguenti comandi per installare le dipendenze necessarie:
+
+**Installare le dipendenze**:
    ```bash
-   npm init -y
+   npm install react react-native
+   npm install react-dom react-scripts
+   npm install axios
    ```
 
-2. **Installare le dipendenze**:
-   ```bash
-   npm install react react-dom
-   npm install react-scripts
-   npm install @testing-library/react @testing-library/jest-dom @testing-library/user-event web-vitals
-   ```
+**Installa @expo/metro-runtime**:
+   npx expo install @expo/metro-runtime
 
-3. **Modifica permanente per OpenSSL3 (se necessario)**:
-   - Nel file `package.json`, sotto la sezione `"scripts"`, aggiungi:
-     ```json
-     "scripts": {
-       "start": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts start",
-       "build": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts build",
-       "test": "SET NODE_OPTIONS=--openssl-legacy-provider && react-scripts test",
-       "eject": "react-scripts eject"
-     }
-     ```
-   - **Nota**: su macOS/Linux usa `export NODE_OPTIONS=--openssl-legacy-provider`.
-
-4. **Avviare il client di sviluppo React**:
+**Avviare il client di sviluppo React**:
    ```bash
    npm start
    ```
