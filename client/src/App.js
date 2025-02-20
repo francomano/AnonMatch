@@ -80,7 +80,7 @@ const App = () => {
                     {authStep === 'choose' && (
                         <View>
                             <Text>Benvenuto! Scegli cosa fare:</Text>
-                            <Button title="Registrati" color="#4CAF50" onPress={() => setAuthStep('register')} />
+                            <Button title="Registrati" color="#E91E63" onPress={() => setAuthStep('register')} />
                             <Button title="Login" color="#2196F3" onPress={() => setAuthStep('login')} />
                         </View>
                     )}

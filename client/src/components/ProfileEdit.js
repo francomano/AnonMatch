@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
-
+import * as ImagePicker from 'react-native-image-picker';
 
 const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
     const [profileData, setProfileData] = useState({
@@ -14,7 +14,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
         movie_genre: '',
         sport: '',
         description: '',
-        profile_picture: null, // Gestione del file
+        profile_picture: null,
         status: '',
         nationality: '',
         city: '',
@@ -48,8 +48,8 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
     const handleFileChange = () => {
         const options = {
             mediaType: 'photo',
-            maxWidth: 500,
-            maxHeight: 500,
+            maxWidth: 300,
+            maxHeight: 300,
         };
 
         ImagePicker.launchImageLibrary(options, (response) => {
@@ -60,7 +60,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
             } else {
                 setProfileData((prevData) => ({
                     ...prevData,
-                    profile_picture: response.assets[0], // Salva il file selezionato
+                    profile_picture: response.assets[0],
                 }));
             }
         });
@@ -86,12 +86,12 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                profilePictureUrl = fileResponse.data.profile_picture; // Ottieni l'URL dell'immagine
+                profilePictureUrl = fileResponse.data.profile_picture;
             }
 
             const updatedData = {
                 ...profileData,
-                profile_picture: profilePictureUrl, // URL ottenuto dal server di immagini
+                profile_picture: profilePictureUrl,
             };
 
             await axios.put('http://192.168.0.24:3001/api/profile', updatedData, {
@@ -109,131 +109,166 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
     };
 
     return (
-        <View style={styles.container}>
+        <ScrollView
+            contentContainerStyle={styles.container}
+            showsVerticalScrollIndicator={false}
+        >
             <Text style={styles.title}>Modifica Profilo</Text>
             <View style={styles.form}>
-                <Text>Nome</Text>
-                <TextInput
-                    style={styles.input}
-                    value={profileData.name}
-                    onChangeText={(value) => handleChange('name', value)}
-                />
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Nome</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={profileData.name}
+                        onChangeText={(value) => handleChange('name', value)}
+                    />
+                </View>
 
-                <Text>Email</Text>
-                <TextInput
-                    style={styles.input}
-                    value={profileData.email}
-                    onChangeText={(value) => handleChange('email', value)}
-                />
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={profileData.email}
+                        onChangeText={(value) => handleChange('email', value)}
+                    />
+                </View>
 
-                <Text>Orientamento</Text>
-                <Picker
-                    selectedValue={profileData.orientation}
-                    onValueChange={(value) => handleChange('orientation', value)}
-                >
-                    <Picker.Item label="Seleziona..." value="" />
-                    <Picker.Item label="Eterosessuale" value="Heterosexual" />
-                    <Picker.Item label="Omossessuale" value="Homosexual" />
-                    <Picker.Item label="Bisessuale" value="Bisexual" />
-                    <Picker.Item label="Altro" value="Other" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Orientamento</Text>
+                    <Picker
+                        selectedValue={profileData.orientation}
+                        onValueChange={(value) => handleChange('orientation', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona..." value="" />
+                        <Picker.Item label="Eterosessuale" value="Heterosexual" />
+                        <Picker.Item label="Omossessuale" value="Homosexual" />
+                        <Picker.Item label="Bisessuale" value="Bisexual" />
+                        <Picker.Item label="Altro" value="Other" />
+                    </Picker>
+                </View>
 
-                <Text>Obiettivo</Text>
-                <Picker
-                    selectedValue={profileData.goal}
-                    onValueChange={(value) => handleChange('goal', value)}
-                >
-                    <Picker.Item label="Seleziona..." value="" />
-                    <Picker.Item label="Incontrare qualcuno" value="Dating" />
-                    <Picker.Item label="Amicizia" value="Friendship" />
-                    <Picker.Item label="Lavoro/Networking" value="Networking" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Obiettivo</Text>
+                    <Picker
+                        selectedValue={profileData.goal}
+                        onValueChange={(value) => handleChange('goal', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona..." value="" />
+                        <Picker.Item label="Incontrare qualcuno" value="Dating" />
+                        <Picker.Item label="Amicizia" value="Friendship" />
+                        <Picker.Item label="Lavoro/Networking" value="Networking" />
+                    </Picker>
+                </View>
 
-                <Text>Genere di musica preferito</Text>
-                <Picker
-                    selectedValue={profileData.music_genre}
-                    onValueChange={(value) => handleChange('music_genre', value)}
-                >
-                    <Picker.Item label="Seleziona..." value="" />
-                    <Picker.Item label="Pop" value="Pop" />
-                    <Picker.Item label="Rock" value="Rock" />
-                    <Picker.Item label="Hip Hop" value="Hip Hop" />
-                    <Picker.Item label="Classica" value="Classical" />
-                    <Picker.Item label="Jazz" value="Jazz" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Genere di musica preferito</Text>
+                    <Picker
+                        selectedValue={profileData.music_genre}
+                        onValueChange={(value) => handleChange('music_genre', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona..." value="" />
+                        <Picker.Item label="Pop" value="Pop" />
+                        <Picker.Item label="Rock" value="Rock" />
+                        <Picker.Item label="Hip Hop" value="Hip Hop" />
+                        <Picker.Item label="Classica" value="Classical" />
+                        <Picker.Item label="Jazz" value="Jazz" />
+                    </Picker>
+                </View>
 
-                <Text>Genere di film preferito</Text>
-                <Picker
-                    selectedValue={profileData.movie_genre}
-                    onValueChange={(value) => handleChange('movie_genre', value)}
-                >
-                    <Picker.Item label="Seleziona..." value="" />
-                    <Picker.Item label="Azione" value="Action" />
-                    <Picker.Item label="Commedia" value="Comedy" />
-                    <Picker.Item label="Dramma" value="Drama" />
-                    <Picker.Item label="Fantascienza" value="Sci-Fi" />
-                    <Picker.Item label="Horror" value="Horror" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Genere di film preferito</Text>
+                    <Picker
+                        selectedValue={profileData.movie_genre}
+                        onValueChange={(value) => handleChange('movie_genre', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona..." value="" />
+                        <Picker.Item label="Azione" value="Action" />
+                        <Picker.Item label="Commedia" value="Comedy" />
+                        <Picker.Item label="Dramma" value="Drama" />
+                        <Picker.Item label="Fantascienza" value="Sci-Fi" />
+                        <Picker.Item label="Horror" value="Horror" />
+                    </Picker>
+                </View>
 
-                <Text>Sport preferito</Text>
-                <Picker
-                    selectedValue={profileData.sport}
-                    onValueChange={(value) => handleChange('sport', value)}
-                >
-                    <Picker.Item label="Seleziona..." value="" />
-                    <Picker.Item label="Calcio" value="Soccer" />
-                    <Picker.Item label="Basket" value="Basketball" />
-                    <Picker.Item label="Tennis" value="Tennis" />
-                    <Picker.Item label="Nuoto" value="Swimming" />
-                    <Picker.Item label="Ciclismo" value="Cycling" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Sport preferito</Text>
+                    <Picker
+                        selectedValue={profileData.sport}
+                        onValueChange={(value) => handleChange('sport', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona..." value="" />
+                        <Picker.Item label="Calcio" value="Soccer" />
+                        <Picker.Item label="Basket" value="Basketball" />
+                        <Picker.Item label="Tennis" value="Tennis" />
+                        <Picker.Item label="Nuoto" value="Swimming" />
+                        <Picker.Item label="Ciclismo" value="Cycling" />
+                    </Picker>
+                </View>
 
-                <Text>Descrizione</Text>
-                <TextInput
-                    style={styles.textarea}
-                    multiline
-                    value={profileData.description}
-                    onChangeText={(value) => handleChange('description', value)}
-                />
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Descrizione</Text>
+                    <TextInput
+                        style={styles.textarea}
+                        multiline
+                        value={profileData.description}
+                        onChangeText={(value) => handleChange('description', value)}
+                    />
+                </View>
 
-                <Text>Foto Profilo</Text>
-                <TouchableOpacity onPress={handleFileChange} style={styles.button}>
-                    <Text style={styles.buttonText}>Seleziona Immagine</Text>
-                </TouchableOpacity>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Foto Profilo</Text>
+                    <TouchableOpacity onPress={handleFileChange} style={styles.button}>
+                        <Text style={styles.buttonText}>Seleziona Immagine</Text>
+                    </TouchableOpacity>
+                </View>
 
-                <Text>Status</Text>
-                <Picker
-                    selectedValue={profileData.status}
-                    onValueChange={(value) => handleChange('status', value)}
-                >
-                    <Picker.Item label="Seleziona" value="" />
-                    <Picker.Item label="Single" value="single" />
-                    <Picker.Item label="Fidanzato" value="fidanzato" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Status</Text>
+                    <Picker
+                        selectedValue={profileData.status}
+                        onValueChange={(value) => handleChange('status', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona" value="" />
+                        <Picker.Item label="Single" value="single" />
+                        <Picker.Item label="Fidanzato" value="fidanzato" />
+                    </Picker>
+                </View>
 
-                <Text>Nazionalità</Text>
-                <Picker
-                    selectedValue={profileData.nationality}
-                    onValueChange={(value) => handleChange('nationality', value)}
-                >
-                    <Picker.Item label="Seleziona" value="" />
-                    <Picker.Item label="Italiana" value="italian" />
-                    <Picker.Item label="Americana" value="american" />
-                    <Picker.Item label="Francese" value="french" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Nazionalità</Text>
+                    <Picker
+                        selectedValue={profileData.nationality}
+                        onValueChange={(value) => handleChange('nationality', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona" value="" />
+                        <Picker.Item label="Italiana" value="italian" />
+                        <Picker.Item label="Americana" value="american" />
+                        <Picker.Item label="Francese" value="french" />
+                    </Picker>
+                </View>
 
-                <Text>Città</Text>
-                <Picker
-                    selectedValue={profileData.city}
-                    onValueChange={(value) => handleChange('city', value)}
-                >
-                    <Picker.Item label="Seleziona" value="" />
-                    <Picker.Item label="Roma" value="rome" />
-                    <Picker.Item label="Milano" value="milan" />
-                    <Picker.Item label="Napoli" value="naples" />
-                    <Picker.Item label="Firenze" value="florence" />
-                    <Picker.Item label="Venezia" value="venice" />
-                </Picker>
+                <View style={styles.formSection}>
+                    <Text style={styles.label}>Città</Text>
+                    <Picker
+                        selectedValue={profileData.city}
+                        onValueChange={(value) => handleChange('city', value)}
+                        style={styles.picker}
+                    >
+                        <Picker.Item label="Seleziona" value="" />
+                        <Picker.Item label="Roma" value="rome" />
+                        <Picker.Item label="Milano" value="milan" />
+                        <Picker.Item label="Napoli" value="naples" />
+                        <Picker.Item label="Firenze" value="florence" />
+                        <Picker.Item label="Venezia" value="venice" />
+                    </Picker>
+                </View>
 
                 <View style={styles.buttons}>
                     <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
@@ -244,62 +279,81 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
-        flex: 1,
+        padding: 10,
     },
     title: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 10,
+        textAlign: 'center',
     },
     form: {
-        marginTop: 10,
+        flex: 1,
+    },
+    formSection: {
+        marginBottom: 12,
+    },
+    label: {
+        fontSize: 12,
+        marginBottom: 5,
     },
     input: {
         borderWidth: 1,
-        padding: 10,
-        marginBottom: 15,
+        padding: 8,
+        fontSize: 12,
         borderRadius: 5,
+        marginBottom: 8,
     },
     textarea: {
         borderWidth: 1,
-        padding: 10,
-        height: 100,
-        marginBottom: 15,
+        padding: 8,
+        height: 80,
+        fontSize: 12,
         borderRadius: 5,
+        marginBottom: 8,
+    },
+    picker: {
+        borderWidth: 1,
+        borderRadius: 5,
+        fontSize: 12,
+        marginBottom: 8,
     },
     button: {
-        backgroundColor: '#4CAF50',
-        padding: 10,
+        backgroundColor: '#E91E63',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
-        marginBottom: 15,
+        marginBottom: 12,
         alignItems: 'center',
     },
     buttonText: {
         color: 'white',
+        fontSize: 14,
     },
     saveButton: {
-        backgroundColor: '#4CAF50',
-        padding: 10,
+        backgroundColor: '#E91E63',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
         flex: 1,
-        marginRight: 10,
     },
     cancelButton: {
-        backgroundColor: '#FF6347',
-        padding: 10,
+        backgroundColor: '#D3D3D3',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
         flex: 1,
+        marginLeft: 8,
     },
     buttons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        marginTop: 15,
     },
 });
 

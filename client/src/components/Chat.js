@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -11,7 +11,7 @@ const Chat = () => {
 
     const [token, setToken] = useState(null);
     const [senderEmail, setSenderEmail] = useState(null);
-    const messagesEndRef = useRef(null); // Riferimento per scrollare verso il fondo
+    const messagesEndRef = useRef(null);
 
     // Recupera il token e l'email del mittente da AsyncStorage
     const loadCredentials = async () => {
@@ -50,12 +50,12 @@ const Chat = () => {
     };
 
     useEffect(() => {
-        loadCredentials(); // Carica il token e l'email all'avvio
+        loadCredentials();
     }, []);
 
     useEffect(() => {
         if (token && senderEmail) {
-            loadMessages(); // Carica i messaggi quando il token e l'email sono disponibili
+            loadMessages();
         }
     }, [token, senderEmail]);
 
@@ -88,8 +88,20 @@ const Chat = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={[styles.messageBubble, item.sender_email === senderEmail ? styles.sent : styles.received]}>
-            <Text style={styles.messageText}>{item.message}</Text>
+        <View 
+            style={[
+                styles.messageBubble, 
+                item.sender_email === senderEmail ? styles.received : styles.sent
+            ]}
+        >
+            <Text 
+                style={[
+                    styles.messageText, 
+                    item.sender_email === senderEmail ? styles.receivedText : styles.messageText
+                ]}
+            >
+                {item.message}
+            </Text>
         </View>
     );
 
@@ -103,13 +115,19 @@ const Chat = () => {
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={messages}
-                renderItem={renderItem}
-                keyExtractor={(item, index) => index.toString()}
+            <ScrollView 
+                style={styles.chatWindow}
                 contentContainerStyle={styles.messageContainer}
                 ref={messagesEndRef}
-            />
+                onContentSizeChange={() => scrollToBottom()} // Scroll to bottom when content changes
+            >
+                <FlatList
+                    data={messages}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => index.toString()}
+                    contentContainerStyle={styles.messageContainer}
+                />
+            </ScrollView>
 
             {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
@@ -132,8 +150,12 @@ const Chat = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-end',
+        backgroundColor: '#f0f8ff', // Colore di sfondo carino per la chat
         padding: 10,
+    },
+    chatWindow: {
+        flex: 1,
+        maxHeight: '80%', // Limita l'altezza della chat
     },
     messageContainer: {
         paddingBottom: 10,
@@ -145,15 +167,18 @@ const styles = StyleSheet.create({
         marginVertical: 5,
     },
     sent: {
-        backgroundColor: '#4CAF50',
-        alignSelf: 'flex-end',
+        backgroundColor: '#E91E63', // Fucsia per i tuoi messaggi
+        alignSelf: 'flex-end', // Allineamento a destra
     },
     received: {
-        backgroundColor: '#f1f1f1',
-        alignSelf: 'flex-start',
+        backgroundColor: '#D3D3D3', // Grigio chiaro per i messaggi ricevuti
+        alignSelf: 'flex-start', // Allineamento a sinistra
     },
     messageText: {
-        color: 'white',
+        color: 'white', // Testo bianco per i messaggi inviati (fucsia)
+    },
+    receivedText: {
+        color: 'black', // Testo nero per i messaggi ricevuti (grigio chiaro)
     },
     input: {
         borderWidth: 1,
@@ -163,7 +188,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     sendButton: {
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#E91E63', // Fucsia per il bottone invio
         padding: 10,
         borderRadius: 20,
         alignItems: 'center',
