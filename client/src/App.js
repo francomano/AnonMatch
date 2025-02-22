@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -58,27 +58,31 @@ const App = () => {
     }, [token, currentPage]);
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>AnonMatch</Text>
 
             {token ? (
-                <View>
+                <View style={styles.pageContainer}>
                     {currentPage === 'chat' && (
-                        <View>
+                        <View style={styles.pageContent}>
                             <Chat />
                             <Button title="Logout" color="#FF6347" onPress={handleLogout} />
                             <Button title="Visualizza Profilo" color="#4CAF50" onPress={() => setCurrentPage('profile')} />
                         </View>
                     )}
 
-                    {currentPage === 'profile' && <Profile profile={profile} onEdit={() => setCurrentPage('profile-edit')} onBackToChat={() => setCurrentPage('chat')} />}
+                    {currentPage === 'profile' && (
+                        <Profile profile={profile} onEdit={() => setCurrentPage('profile-edit')} onBackToChat={() => setCurrentPage('chat')} />
+                    )}
 
-                    {currentPage === 'profile-edit' && <ProfileEdit onSave={() => setCurrentPage('profile')} onBackToProfile={() => setCurrentPage('profile')} />}
+                    {currentPage === 'profile-edit' && (
+                        <ProfileEdit onSave={() => setCurrentPage('profile')} onBackToProfile={() => setCurrentPage('profile')} />
+                    )}
                 </View>
             ) : (
-                <View>
+                <View style={styles.pageContainer}>
                     {authStep === 'choose' && (
-                        <View>
+                        <View style={styles.authContainer}>
                             <Text>Benvenuto! Scegli cosa fare:</Text>
                             <Button title="Registrati" color="#E91E63" onPress={() => setAuthStep('register')} />
                             <Button title="Login" color="#2196F3" onPress={() => setAuthStep('login')} />
@@ -86,7 +90,7 @@ const App = () => {
                     )}
 
                     {authStep === 'register' && (
-                        <View>
+                        <View style={styles.authContainer}>
                             <Text style={styles.subtitle}>Registrazione</Text>
                             <Register onRegistered={() => setAuthStep('login')} />
                             <Button title="Hai già un account? Accedi" color="#FF6347" onPress={() => setAuthStep('login')} />
@@ -94,7 +98,7 @@ const App = () => {
                     )}
 
                     {authStep === 'login' && (
-                        <View>
+                        <View style={styles.authContainer}>
                             <Text style={styles.subtitle}>Login</Text>
                             <Login onLogin={handleLogin} />
                             <Button title="Non hai un account? Registrati" color="#4CAF50" onPress={() => setAuthStep('register')} />
@@ -102,17 +106,18 @@ const App = () => {
                     )}
                 </View>
             )}
-        </View>
+        </ScrollView>
     );
 };
 
 // 🎨 Stili per React Native (sostituisce CSS)
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexGrow: 1,
+        alignItems: 'stretch',  // Assicura che i contenuti si espandano orizzontalmente
+        justifyContent: 'flex-start', // Inizia la disposizione dei componenti dal top
         padding: 20,
+        width: '100%', // Usa tutta la larghezza disponibile
     },
     title: {
         fontSize: 24,
@@ -123,6 +128,20 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 10,
+    },
+    pageContainer: {
+        width: '100%',
+        flexDirection: 'column',
+    },
+    pageContent: {
+        flex: 1,
+        justifyContent: 'space-between', // Spazia correttamente gli elementi
+    },
+    authContainer: {
+        flexDirection: 'column',
+        justifyContent: 'space-between', // Spazia i componenti di login e registrazione
+        marginBottom: 20,
+        width: '100%',
     },
 });
 

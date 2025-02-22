@@ -139,6 +139,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.orientation}
                         onValueChange={(value) => handleChange('orientation', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona..." value="" />
                         <Picker.Item label="Eterosessuale" value="Heterosexual" />
@@ -154,6 +155,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.goal}
                         onValueChange={(value) => handleChange('goal', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona..." value="" />
                         <Picker.Item label="Incontrare qualcuno" value="Dating" />
@@ -168,6 +170,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.music_genre}
                         onValueChange={(value) => handleChange('music_genre', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona..." value="" />
                         <Picker.Item label="Pop" value="Pop" />
@@ -184,6 +187,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.movie_genre}
                         onValueChange={(value) => handleChange('movie_genre', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona..." value="" />
                         <Picker.Item label="Azione" value="Action" />
@@ -200,6 +204,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.sport}
                         onValueChange={(value) => handleChange('sport', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona..." value="" />
                         <Picker.Item label="Calcio" value="Soccer" />
@@ -233,6 +238,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.status}
                         onValueChange={(value) => handleChange('status', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona" value="" />
                         <Picker.Item label="Single" value="single" />
@@ -246,6 +252,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.nationality}
                         onValueChange={(value) => handleChange('nationality', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona" value="" />
                         <Picker.Item label="Italiana" value="italian" />
@@ -260,6 +267,7 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
                         selectedValue={profileData.city}
                         onValueChange={(value) => handleChange('city', value)}
                         style={styles.picker}
+                        itemStyle={{ color: '#000000' }}
                     >
                         <Picker.Item label="Seleziona" value="" />
                         <Picker.Item label="Roma" value="rome" />
@@ -286,74 +294,87 @@ const ProfileEdit = ({ setCurrentPage, onBackToProfile }) => {
 const styles = StyleSheet.create({
     container: {
         padding: 10,
+        backgroundColor: '#fff',
     },
     title: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
+        fontSize: 22,
+        fontWeight: '700',
+        marginBottom: 20,
         textAlign: 'center',
+        color: '#333',
     },
     form: {
         flex: 1,
     },
     formSection: {
-        marginBottom: 12,
+        marginBottom: 18,
     },
     label: {
-        fontSize: 12,
-        marginBottom: 5,
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 8,
     },
     input: {
         borderWidth: 1,
-        padding: 8,
-        fontSize: 12,
-        borderRadius: 5,
-        marginBottom: 8,
+        padding: 12,
+        fontSize: 14,
+        borderRadius: 8,
+        marginBottom: 10,
+        backgroundColor: '#f4f4f4',
+        borderColor: '#ddd',
+        color: '#333',
     },
     textarea: {
         borderWidth: 1,
-        padding: 8,
-        height: 80,
-        fontSize: 12,
-        borderRadius: 5,
-        marginBottom: 8,
+        padding: 12,
+        fontSize: 14,
+        borderRadius: 8,
+        marginBottom: 10,
+        backgroundColor: '#f4f4f4',
+        borderColor: '#ddd',
+        minHeight: 80,
+        color: '#333',
     },
     picker: {
         borderWidth: 1,
-        borderRadius: 5,
-        fontSize: 12,
-        marginBottom: 8,
+        borderRadius: 8,
+        marginBottom: 10,
+        fontSize: 14,
+        backgroundColor: '#f4f4f4',
+        color: '#000000',
     },
     button: {
         backgroundColor: '#E91E63',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 5,
-        marginBottom: 12,
+        borderRadius: 8,
+        marginBottom: 20,
         alignItems: 'center',
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
         fontSize: 14,
+        fontWeight: '600',
     },
     saveButton: {
         backgroundColor: '#E91E63',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 5,
+        borderRadius: 8,
         flex: 1,
     },
     cancelButton: {
         backgroundColor: '#D3D3D3',
-        paddingVertical: 10,
+        paddingVertical: 12,
         paddingHorizontal: 20,
-        borderRadius: 5,
+        borderRadius: 8,
         flex: 1,
         marginLeft: 8,
     },
     buttons: {
         flexDirection: 'row',
-        marginTop: 15,
+        marginTop: 20,
     },
 });
 

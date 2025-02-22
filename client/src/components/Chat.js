@@ -1,5 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    ActivityIndicator,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard,
+    ScrollView,
+} from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -87,24 +99,6 @@ const Chat = () => {
         }
     };
 
-    const renderItem = ({ item }) => (
-        <View 
-            style={[
-                styles.messageBubble, 
-                item.sender_email === senderEmail ? styles.received : styles.sent
-            ]}
-        >
-            <Text 
-                style={[
-                    styles.messageText, 
-                    item.sender_email === senderEmail ? styles.receivedText : styles.messageText
-                ]}
-            >
-                {item.message}
-            </Text>
-        </View>
-    );
-
     const scrollToBottom = () => {
         messagesEndRef.current.scrollToEnd({ animated: true });
     };
@@ -114,84 +108,105 @@ const Chat = () => {
     }, [messages]);
 
     return (
-        <View style={styles.container}>
-            <ScrollView 
-                style={styles.chatWindow}
-                contentContainerStyle={styles.messageContainer}
-                ref={messagesEndRef}
-                onContentSizeChange={() => scrollToBottom()} // Scroll to bottom when content changes
-            >
-                <FlatList
-                    data={messages}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    contentContainerStyle={styles.messageContainer}
-                />
-            </ScrollView>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.container}>
+                    {/* Usa ScrollView per gestire lo scorrimento dei messaggi */}
+                    <ScrollView
+                        ref={messagesEndRef}
+                        contentContainerStyle={styles.messageContainer}
+                    >
+                        {messages.map((item, index) => (
+                            <View 
+                                key={index}
+                                style={[
+                                    styles.messageBubble, 
+                                    item.sender_email === senderEmail ? styles.received : styles.sent
+                                ]}
+                            >
+                                <Text 
+                                    style={[
+                                        styles.messageText, 
+                                        item.sender_email === senderEmail ? styles.receivedText : styles.messageText
+                                    ]}
+                                >
+                                    {item.message}
+                                </Text>
+                            </View>
+                        ))}
+                    </ScrollView>
 
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
+                    {loading && <ActivityIndicator size="large" color="#0000ff" />}
 
-            <TextInput
-                style={styles.input}
-                value={message}
-                onChangeText={setMessage}
-                placeholder="Scrivi un messaggio"
-                multiline
-            />
-            <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>Invia</Text>
-            </TouchableOpacity>
+                    <View style={styles.inputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            value={message}
+                            onChangeText={setMessage}
+                            placeholder="Scrivi un messaggio"
+                            multiline
+                        />
+                        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+                            <Text style={styles.sendButtonText}>Invia</Text>
+                        </TouchableOpacity>
+                    </View>
 
-            {error && <Text style={styles.errorText}>{error}</Text>}
-        </View>
+                    {error && <Text style={styles.errorText}>{error}</Text>}
+                </View>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f0f8ff', // Colore di sfondo carino per la chat
+        backgroundColor: '#f0f8ff',
         padding: 10,
-    },
-    chatWindow: {
-        flex: 1,
-        maxHeight: '80%', // Limita l'altezza della chat
+        width: '100%',
     },
     messageContainer: {
+        flexGrow: 1,
         paddingBottom: 10,
     },
     messageBubble: {
-        maxWidth: '70%',
-        padding: 10,
+        maxWidth: '75%',
+        padding: 12,
         borderRadius: 20,
         marginVertical: 5,
+        alignSelf: 'flex-start',
     },
     sent: {
-        backgroundColor: '#E91E63', // Fucsia per i tuoi messaggi
-        alignSelf: 'flex-end', // Allineamento a destra
+        backgroundColor: '#E91E63',
+        alignSelf: 'flex-end',
     },
     received: {
-        backgroundColor: '#D3D3D3', // Grigio chiaro per i messaggi ricevuti
-        alignSelf: 'flex-start', // Allineamento a sinistra
+        backgroundColor: '#D3D3D3',
+        alignSelf: 'flex-start',
     },
-    messageText: {
-        color: 'white', // Testo bianco per i messaggi inviati (fucsia)
-    },
-    receivedText: {
-        color: 'black', // Testo nero per i messaggi ricevuti (grigio chiaro)
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        paddingHorizontal: 10,
+        paddingBottom: 10,
+        backgroundColor: '#fff',
     },
     input: {
+        flex: 1,
         borderWidth: 1,
         borderRadius: 20,
-        padding: 10,
-        marginTop: 10,
-        marginBottom: 10,
+        padding: 12,
+        backgroundColor: '#fff',
     },
     sendButton: {
-        backgroundColor: '#E91E63', // Fucsia per il bottone invio
-        padding: 10,
+        backgroundColor: '#E91E63',
+        padding: 12,
         borderRadius: 20,
-        alignItems: 'center',
+        marginLeft: 10,
     },
     sendButtonText: {
         color: 'white',
